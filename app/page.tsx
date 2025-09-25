@@ -63,17 +63,17 @@ export default function Home() {
   return (
     <main className="container mx-auto px-4 py-8 max-w-2xl">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-800 mb-2">
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">
           🎁 White Elephant Name Picker
         </h1>
-        <p className="text-gray-600">
+        <p className="text-gray-800 text-lg">
           Pick a name for your gift exchange with custom restrictions!
         </p>
       </div>
 
       {!showResult && !isAnimating && (
         <div className="card animate-fade-in">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6 text-center">
             Who&apos;s picking today?
           </h2>
           
@@ -90,7 +90,7 @@ export default function Home() {
               >
                 <div className="font-medium">{person.name}</div>
                 {person.restrictions.length > 0 && (
-                  <div className="text-sm text-gray-500 mt-1">
+                  <div className="text-sm text-gray-700 mt-1">
                     Can&apos;t pick: {person.restrictions.map(id => 
                       people.find(p => p.id === id)?.name
                     ).join(', ')}
@@ -123,7 +123,7 @@ export default function Home() {
         <div className="card text-center animate-fade-in">
           <div className="py-12">
             <div className="text-6xl mb-4 animate-bounce">🎁</div>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">
               Picking someone for {pickerName}...
             </h2>
             <div className="flex justify-center items-center space-x-1">
@@ -139,13 +139,13 @@ export default function Home() {
         <div className="card text-center animate-fade-in">
           <div className="py-8">
             <div className="text-6xl mb-4">🎉</div>
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">
               {pickerName} picked...
             </h2>
             <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-6 animate-slide-up">
               {pickedPerson}!
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-800 text-lg mb-6">
               Time to exchange gifts! 🎁
             </p>
             <button
@@ -160,8 +160,8 @@ export default function Home() {
 
       <div className="mt-8 text-center">
         <div className="card">
-          <h3 className="font-semibold text-gray-800 mb-3">How it works:</h3>
-          <ul className="text-sm text-gray-600 space-y-1 text-left">
+          <h3 className="font-semibold text-gray-900 mb-3">How it works:</h3>
+          <ul className="text-sm text-gray-800 space-y-1 text-left">
             <li>• Nicholas and Ellie can&apos;t pick each other (they live together)</li>
             <li>• Michael and Alyssa can&apos;t pick each other (they live together)</li>
             <li>• Mom can pick anyone</li>

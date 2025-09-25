@@ -10,7 +10,15 @@
       "Bash(npm run lint)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "WebFetch(domain:white-elephant-picker-6dfyw5yrw-astral-productions.vercel.app)",
+      "Bash(curl:*)",
+      "WebFetch(domain:white-elephant-picker.vercel.app)",
+      "Bash(npm audit:*)",
+      "Bash(npm run dev:*)",
+      "Bash(PORT=3005 npm run dev)",
+      "Bash(npm start)",
+      "Bash(PORT=3006 npm start)"
     ],
     "deny": [],
     "ask": []
