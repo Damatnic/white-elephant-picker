@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh repo create:*)",
+      "Bash(vercel:*)",
+      "WebFetch(domain:white-elephant-picker-6ov0gjt36-astral-productions.vercel.app)",
+      "Bash(npm run build:*)",
+      "Bash(npm install)",
+      "Bash(npm audit fix:*)",
+      "Bash(npm run lint)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -74,7 +74,7 @@ export default function Home() {
       {!showResult && !isAnimating && (
         <div className="card animate-fade-in">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-            Who's picking today?
+            Who&apos;s picking today?
           </h2>
           
           <div className="grid gap-3 mb-6">
@@ -91,7 +91,7 @@ export default function Home() {
                 <div className="font-medium">{person.name}</div>
                 {person.restrictions.length > 0 && (
                   <div className="text-sm text-gray-500 mt-1">
-                    Can't pick: {person.restrictions.map(id => 
+                    Can&apos;t pick: {person.restrictions.map(id => 
                       people.find(p => p.id === id)?.name
                     ).join(', ')}
                   </div>
@@ -162,8 +162,8 @@ export default function Home() {
         <div className="card">
           <h3 className="font-semibold text-gray-800 mb-3">How it works:</h3>
           <ul className="text-sm text-gray-600 space-y-1 text-left">
-            <li>• Nicholas and Ellie can't pick each other (they live together)</li>
-            <li>• Michael and Alyssa can't pick each other (they live together)</li>
+            <li>• Nicholas and Ellie can&apos;t pick each other (they live together)</li>
+            <li>• Michael and Alyssa can&apos;t pick each other (they live together)</li>
             <li>• Mom can pick anyone</li>
             <li>• Everyone else follows the same rules</li>
           </ul>
