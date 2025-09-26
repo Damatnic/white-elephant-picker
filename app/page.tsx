@@ -26,7 +26,6 @@ export default function Home() {
   const [isAnimating, setIsAnimating] = useState(false)
   const [showResult, setShowResult] = useState(false)
   const [isSendingSMS, setIsSendingSMS] = useState(false)
-  const [gameHistory, setGameHistory] = useState<{picker: string, picked: string}[]>([])
   const [confetti, setConfetti] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
 
@@ -86,7 +85,6 @@ export default function Home() {
       ))
       
       setPickedPerson(picked)
-      setGameHistory(prev => [...prev, {picker: picker.name, picked: picked.name}])
       setIsAnimating(false)
       setShowResult(true)
       setConfetti(true)
@@ -106,7 +104,6 @@ export default function Home() {
   
   const resetAll = () => {
     setPeople(initialPeople)
-    setGameHistory([])
     reset()
   }
 
@@ -172,8 +169,8 @@ export default function Home() {
             <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-white/80'}`}>Available</div>
           </div>
           <div className={`text-center p-4 rounded-2xl ${darkMode ? 'bg-gray-800/50' : 'bg-white/20'} backdrop-blur-sm`}>
-            <div className="text-3xl font-bold text-white">{gameHistory.length}</div>
-            <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-white/80'}`}>Rounds</div>
+            <div className="text-3xl font-bold text-white">{people.length - people.filter(p => p.isChosen).length}</div>
+            <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-white/80'}`}>Remaining</div>
           </div>
         </div>
 
@@ -315,21 +312,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Game History */}
-        {gameHistory.length > 0 && (
-          <div className={`p-6 rounded-3xl ${darkMode ? 'bg-gray-800/30' : 'bg-white/10'} backdrop-blur-lg mb-8`}>
-            <h3 className="text-2xl font-bold text-white mb-4">🏆 Game History</h3>
-            <div className="space-y-2">
-              {gameHistory.map((entry, index) => (
-                <div key={index} className={`p-3 rounded-xl ${darkMode ? 'bg-gray-700/30' : 'bg-white/10'}`}>
-                  <span className="text-white">
-                    <strong>{entry.picker}</strong> → <strong className="text-yellow-400">{entry.picked}</strong>
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )
