@@ -190,22 +190,24 @@ export default function Home() {
               {pickerName} picked...
             </h2>
             <div 
-              className="mb-6 animate-slide-up"
               style={{
                 fontSize: '4rem',
                 fontWeight: 900,
-                color: '#000000',
-                backgroundColor: '#FEF3C7',
-                border: '4px solid #3B82F6',
+                color: 'black !important',
+                backgroundColor: 'red',
+                border: '5px solid black',
                 padding: '2rem',
                 borderRadius: '0.5rem',
                 textAlign: 'center',
                 display: 'block',
-                visibility: 'visible',
-                opacity: 1
+                visibility: 'visible !important',
+                opacity: '1 !important',
+                WebkitTextFillColor: 'black !important'
               }}
             >
-              {pickedPerson}!
+              <span style={{color: 'black !important', WebkitTextFillColor: 'black !important'}}>
+                {pickedPerson}!
+              </span>
             </div>
             <p className="text-gray-800 text-lg mb-6">
               Time to exchange gifts! 🎁
