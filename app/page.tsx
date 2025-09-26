@@ -193,19 +193,19 @@ export default function Home() {
               style={{
                 fontSize: '4rem',
                 fontWeight: 900,
-                color: 'black !important',
+                color: 'black',
                 backgroundColor: 'red',
                 border: '5px solid black',
                 padding: '2rem',
                 borderRadius: '0.5rem',
-                textAlign: 'center',
+                textAlign: 'center' as const,
                 display: 'block',
-                visibility: 'visible !important',
-                opacity: '1 !important',
-                WebkitTextFillColor: 'black !important'
-              }}
+                visibility: 'visible' as const,
+                opacity: 1,
+                WebkitTextFillColor: 'black'
+              } as React.CSSProperties}
             >
-              <span style={{color: 'black !important', WebkitTextFillColor: 'black !important'}}>
+              <span style={{color: 'black', WebkitTextFillColor: 'black'}}>
                 {pickedPerson}!
               </span>
             </div>
