@@ -5,22 +5,26 @@ import { useState } from 'react'
 interface Person {
   id: string
   name: string
+  phone: string
   restrictions: string[]
+  isChosen?: boolean
 }
 
-const people: Person[] = [
-  { id: 'nicholas', name: 'Nicholas', restrictions: ['ellie'] },
-  { id: 'ellie', name: 'Ellie', restrictions: ['nicholas'] },
-  { id: 'michael', name: 'Michael', restrictions: ['alyssa'] },
-  { id: 'alyssa', name: 'Alyssa', restrictions: ['michael'] },
-  { id: 'mom', name: 'Mom', restrictions: [] }
+const initialPeople: Person[] = [
+  { id: 'nicholas', name: 'Nicholas', phone: '262-229-7103', restrictions: ['ellie'], isChosen: false },
+  { id: 'ellie', name: 'Ellie', phone: '218-443-2237', restrictions: ['nicholas'], isChosen: false },
+  { id: 'michael', name: 'Michael', phone: '414-343-9808', restrictions: ['alyssa'], isChosen: false },
+  { id: 'alyssa', name: 'Alyssa', phone: '414-379-3165', restrictions: ['michael'], isChosen: false },
+  { id: 'mom', name: 'Mom', phone: '414-841-8664', restrictions: [], isChosen: false }
 ]
 
 export default function Home() {
+  const [people, setPeople] = useState<Person[]>(initialPeople)
   const [selectedPicker, setSelectedPicker] = useState<string>('')
   const [pickedPerson, setPickedPerson] = useState<string>('')
   const [isAnimating, setIsAnimating] = useState(false)
   const [showResult, setShowResult] = useState(false)
+  const [isSendingSMS, setIsSendingSMS] = useState(false)
 
   const getAvailablePeople = (pickerId: string): Person[] => {
     const picker = people.find(p => p.id === pickerId)
@@ -28,8 +32,31 @@ export default function Home() {
     
     return people.filter(person => 
       person.id !== pickerId && 
-      !picker.restrictions.includes(person.id)
+      !picker.restrictions.includes(person.id) &&
+      !person.isChosen
     )
+  }
+
+  const sendSMS = async (pickerPhone: string, pickerName: string, pickedName: string) => {
+    try {
+      setIsSendingSMS(true)
+      const response = await fetch('/api/send-sms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: pickerPhone,
+          message: `🎁 White Elephant Result: ${pickerName}, you picked ${pickedName}! Time for gift exchange! 🎉`
+        })
+      })
+      
+      if (!response.ok) {
+        console.error('SMS failed:', await response.text())
+      }
+    } catch (error) {
+      console.error('SMS error:', error)
+    } finally {
+      setIsSendingSMS(false)
+    }
   }
 
   const pickRandomPerson = () => {
@@ -44,9 +71,21 @@ export default function Home() {
     setTimeout(() => {
       const randomIndex = Math.floor(Math.random() * availablePeople.length)
       const picked = availablePeople[randomIndex]
+      const picker = people.find(p => p.id === selectedPicker)!
+      
+      // Mark person as chosen
+      setPeople(prev => prev.map(person => 
+        person.id === picked.id 
+          ? { ...person, isChosen: true }
+          : person
+      ))
+      
       setPickedPerson(picked.name)
       setIsAnimating(false)
       setShowResult(true)
+      
+      // Send SMS notification
+      sendSMS(picker.phone, picker.name, picked.name)
     }, 2000)
   }
 
@@ -55,6 +94,11 @@ export default function Home() {
     setPickedPerson('')
     setShowResult(false)
     setIsAnimating(false)
+  }
+  
+  const resetAll = () => {
+    setPeople(initialPeople)
+    reset()
   }
 
   const pickerName = people.find(p => p.id === selectedPicker)?.name || ''
@@ -82,13 +126,16 @@ export default function Home() {
               <button
                 key={person.id}
                 onClick={() => setSelectedPicker(person.id)}
-                className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                className={`p-4 rounded-lg border-2 transition-all duration-200 relative ${
                   selectedPicker === person.id
                     ? 'border-blue-500 bg-blue-50 text-blue-800'
                     : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
-                <div className="font-medium">{person.name}</div>
+                <div className="font-medium flex justify-between items-center">
+                  {person.name}
+                  {person.isChosen && <span className="text-green-600 text-sm">✓ Chosen</span>}
+                </div>
                 {person.restrictions.length > 0 && (
                   <div className="text-sm text-gray-700 mt-1">
                     Can&apos;t pick: {person.restrictions.map(id => 
@@ -154,6 +201,17 @@ export default function Home() {
             >
               Pick Again
             </button>
+            <button
+              onClick={resetAll}
+              className="btn-secondary ml-4"
+            >
+              Reset All
+            </button>
+            {isSendingSMS && (
+              <p className="text-sm text-blue-600 mt-2">
+                📱 Sending SMS notification...
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -165,7 +223,8 @@ export default function Home() {
             <li>• Nicholas and Ellie can&apos;t pick each other (they live together)</li>
             <li>• Michael and Alyssa can&apos;t pick each other (they live together)</li>
             <li>• Mom can pick anyone</li>
-            <li>• Everyone else follows the same rules</li>
+            <li>• People already chosen can&apos;t be picked again</li>
+            <li>• SMS notifications sent automatically to the picker</li>
           </ul>
         </div>
       </div>
