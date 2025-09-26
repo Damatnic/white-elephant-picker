@@ -33,22 +33,36 @@ export default function Home() {
     const picker = people.find(p => p.id === pickerId)
     if (!picker) return []
     
-    return people.filter(person => 
+    // First, try with normal restrictions
+    let availablePeople = people.filter(person => 
       person.id !== pickerId && 
       !picker.restrictions.includes(person.id) &&
       !person.isChosen
     )
+    
+    // If no one is available due to restrictions, allow picking from restricted people
+    // (emergency fallback to keep the game going)
+    if (availablePeople.length === 0) {
+      availablePeople = people.filter(person => 
+        person.id !== pickerId && 
+        !person.isChosen
+      )
+    }
+    
+    return availablePeople
   }
 
-  const sendSMS = async (pickerPhone: string, pickerName: string, pickedName: string) => {
+  const sendSMS = async (pickerPhone: string, pickerName: string, pickedName: string, customMessage?: string) => {
     try {
       setIsSendingSMS(true)
+      const message = customMessage || `🎁 White Elephant Magic! ${pickerName}, you picked ${pickedName}! Get ready for gift exchange fun! 🎉`
+      
       const response = await fetch('/api/send-sms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: pickerPhone,
-          message: `🎁 White Elephant Magic! ${pickerName}, you picked ${pickedName}! Get ready for gift exchange fun! 🎉`
+          message: message
         })
       })
       
@@ -77,6 +91,9 @@ export default function Home() {
       const randomIndex = Math.floor(Math.random() * availablePeople.length)
       const picked = availablePeople[randomIndex]
       
+      // Check if we had to use emergency fallback (picking restricted person)
+      const hadRestrictions = picker.restrictions.includes(picked.id)
+      
       // Mark person as chosen
       setPeople(prev => prev.map(person => 
         person.id === picked.id 
@@ -89,8 +106,12 @@ export default function Home() {
       setShowResult(true)
       setConfetti(true)
       
-      // Send SMS notification
-      sendSMS(picker.phone, picker.name, picked.name)
+      // Send SMS notification with special message if restriction was overridden
+      const message = hadRestrictions 
+        ? `🎁 White Elephant SPECIAL! ${picker.name}, you got ${picked.name}! (Restrictions were lifted to keep the game going!) 🎉`
+        : `🎁 White Elephant Magic! ${picker.name}, you picked ${picked.name}! Get ready for gift exchange fun! 🎉`
+      
+      sendSMS(picker.phone, picker.name, picked.name, message)
     }, 3000)
   }
 
@@ -234,6 +255,9 @@ export default function Home() {
                 <div className="p-6 rounded-2xl bg-red-500/20 border border-red-400/30">
                   <p className="text-white text-lg mb-4">
                     😱 <span className="font-bold">{pickerName}</span> has no one left to pick!
+                  </p>
+                  <p className="text-white text-sm mb-4">
+                    Everyone available has already been chosen. Time to reset!
                   </p>
                   <button
                     onClick={resetAll}
