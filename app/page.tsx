@@ -198,9 +198,22 @@ export default function Home() {
         {/* Main Game Area */}
         {!showResult && !isAnimating && (
           <div className={`p-8 rounded-3xl ${darkMode ? 'bg-gray-800/30' : 'bg-white/10'} backdrop-blur-lg border border-white/20 mb-8`}>
-            <h2 className="text-3xl font-bold text-white mb-8 text-center">
+            <h2 className="text-3xl font-bold text-white mb-4 text-center">
               Who&apos;s picking today? 🤔
             </h2>
+            
+            {people.filter(p => p.isChosen).length === 0 && (
+              <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/30">
+                <div className="text-center">
+                  <p className="text-white text-lg mb-2">
+                    👑 <strong>Suggestion:</strong> Have Mom pick first!
+                  </p>
+                  <p className="text-white/80 text-sm">
+                    She has no restrictions, so she can pick anyone. Then the couple restrictions will work perfectly for everyone else!
+                  </p>
+                </div>
+              </div>
+            )}
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               {people.map((person) => (
@@ -210,6 +223,8 @@ export default function Home() {
                   className={`group p-6 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 ${
                     selectedPicker === person.id
                       ? 'border-yellow-400 bg-yellow-400/20 scale-105'
+                      : person.id === 'mom' && people.filter(p => p.isChosen).length === 0
+                      ? `border-purple-400 bg-purple-400/10 hover:border-purple-300 ${darkMode ? 'bg-purple-700/20' : 'bg-purple-500/10'}`
                       : `border-white/30 ${darkMode ? 'bg-gray-700/30' : 'bg-white/10'} hover:border-white/50`
                   }`}
                 >
@@ -217,7 +232,14 @@ export default function Home() {
                     <div className="flex items-center space-x-4">
                       <span className="text-4xl">{person.emoji}</span>
                       <div className="text-left">
-                        <div className="text-xl font-bold text-white">{person.name}</div>
+                        <div className="text-xl font-bold text-white flex items-center gap-2">
+                          {person.name}
+                          {person.id === 'mom' && people.filter(p => p.isChosen).length === 0 && (
+                            <span className="text-xs bg-purple-500 text-white px-2 py-1 rounded-full animate-pulse">
+                              Go First!
+                            </span>
+                          )}
+                        </div>
                         {person.restrictions.length > 0 && (
                           <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-white/70'}`}>
                             Can&apos;t pick: {person.restrictions.map(id => 
