@@ -189,7 +189,22 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
               {pickerName} picked...
             </h2>
-            <div className="text-6xl font-black text-gray-900 mb-6 animate-slide-up border-4 border-blue-500 bg-yellow-100 p-4 rounded-lg">
+            <div 
+              className="mb-6 animate-slide-up"
+              style={{
+                fontSize: '4rem',
+                fontWeight: 900,
+                color: '#000000',
+                backgroundColor: '#FEF3C7',
+                border: '4px solid #3B82F6',
+                padding: '2rem',
+                borderRadius: '0.5rem',
+                textAlign: 'center',
+                display: 'block',
+                visibility: 'visible',
+                opacity: 1
+              }}
+            >
               {pickedPerson}!
             </div>
             <p className="text-gray-800 text-lg mb-6">
