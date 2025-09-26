@@ -189,7 +189,7 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
               {pickerName} picked...
             </h2>
-            <div className="text-5xl font-bold text-blue-700 mb-6 animate-slide-up">
+            <div className="text-6xl font-black text-gray-900 mb-6 animate-slide-up border-4 border-blue-500 bg-yellow-100 p-4 rounded-lg">
               {pickedPerson}!
             </div>
             <p className="text-gray-800 text-lg mb-6">
