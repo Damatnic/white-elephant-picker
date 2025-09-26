@@ -190,7 +190,7 @@ export default function Home() {
                     selectedPicker === person.id
                       ? 'border-yellow-400 bg-yellow-400/20 scale-105'
                       : `border-white/30 ${darkMode ? 'bg-gray-700/30' : 'bg-white/10'} hover:border-white/50`
-                  } ${person.isChosen ? 'opacity-50' : ''}`}
+                  }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
@@ -206,9 +206,6 @@ export default function Home() {
                         )}
                       </div>
                     </div>
-                    {person.isChosen && (
-                      <span className="text-green-400 text-xl font-bold">✓ Chosen</span>
-                    )}
                   </div>
                 </button>
               ))}
