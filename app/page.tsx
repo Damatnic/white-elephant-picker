@@ -189,26 +189,9 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
               {pickerName} picked...
             </h2>
-            <div 
-              style={{
-                fontSize: '4rem',
-                fontWeight: 900,
-                color: 'black',
-                backgroundColor: 'red',
-                border: '5px solid black',
-                padding: '2rem',
-                borderRadius: '0.5rem',
-                textAlign: 'center' as const,
-                display: 'block',
-                visibility: 'visible' as const,
-                opacity: 1,
-                WebkitTextFillColor: 'black'
-              } as React.CSSProperties}
-            >
-              <span style={{color: 'black', WebkitTextFillColor: 'black'}}>
-                {pickedPerson}!
-              </span>
-            </div>
+             <div className="text-5xl font-bold text-white bg-gradient-to-r from-red-500 to-red-600 mb-6 animate-slide-up p-6 rounded-xl border-4 border-black shadow-2xl">
+               {pickedPerson}!
+             </div>
             <p className="text-gray-800 text-lg mb-6">
               Time to exchange gifts! 🎁
             </p>
