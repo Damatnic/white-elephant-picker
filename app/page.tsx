@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface Person {
   id: string
@@ -8,23 +8,27 @@ interface Person {
   phone: string
   restrictions: string[]
   isChosen?: boolean
+  emoji: string
 }
 
 const initialPeople: Person[] = [
-  { id: 'nicholas', name: 'Nicholas', phone: '262-229-7103', restrictions: ['ellie'], isChosen: false },
-  { id: 'ellie', name: 'Ellie', phone: '218-443-2237', restrictions: ['nicholas'], isChosen: false },
-  { id: 'michael', name: 'Michael', phone: '414-343-9808', restrictions: ['alyssa'], isChosen: false },
-  { id: 'alyssa', name: 'Alyssa', phone: '414-379-3165', restrictions: ['michael'], isChosen: false },
-  { id: 'mom', name: 'Mom', phone: '414-841-8664', restrictions: [], isChosen: false }
+  { id: 'nicholas', name: 'Nicholas', phone: '262-229-7103', restrictions: ['ellie'], isChosen: false, emoji: '🎮' },
+  { id: 'ellie', name: 'Ellie', phone: '218-443-2237', restrictions: ['nicholas'], isChosen: false, emoji: '🎨' },
+  { id: 'michael', name: 'Michael', phone: '414-343-9808', restrictions: ['alyssa'], isChosen: false, emoji: '⚽' },
+  { id: 'alyssa', name: 'Alyssa', phone: '414-379-3165', restrictions: ['michael'], isChosen: false, emoji: '📚' },
+  { id: 'mom', name: 'Mom', phone: '414-841-8664', restrictions: [], isChosen: false, emoji: '👑' }
 ]
 
 export default function Home() {
   const [people, setPeople] = useState<Person[]>(initialPeople)
   const [selectedPicker, setSelectedPicker] = useState<string>('')
-  const [pickedPerson, setPickedPerson] = useState<string>('')
+  const [pickedPerson, setPickedPerson] = useState<Person | null>(null)
   const [isAnimating, setIsAnimating] = useState(false)
   const [showResult, setShowResult] = useState(false)
   const [isSendingSMS, setIsSendingSMS] = useState(false)
+  const [gameHistory, setGameHistory] = useState<{picker: string, picked: string}[]>([])
+  const [confetti, setConfetti] = useState(false)
+  const [darkMode, setDarkMode] = useState(false)
 
   const getAvailablePeople = (pickerId: string): Person[] => {
     const picker = people.find(p => p.id === pickerId)
@@ -45,7 +49,7 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: pickerPhone,
-          message: `🎁 White Elephant Result: ${pickerName}, you picked ${pickedName}! Time for gift exchange! 🎉`
+          message: `🎁 White Elephant Magic! ${pickerName}, you picked ${pickedName}! Get ready for gift exchange fun! 🎉`
         })
       })
       
@@ -64,14 +68,15 @@ export default function Home() {
 
     setIsAnimating(true)
     setShowResult(false)
+    setConfetti(false)
     
     const availablePeople = getAvailablePeople(selectedPicker)
+    const picker = people.find(p => p.id === selectedPicker)!
     
-    // Add some suspense with a delay
+    // Dramatic countdown animation
     setTimeout(() => {
       const randomIndex = Math.floor(Math.random() * availablePeople.length)
       const picked = availablePeople[randomIndex]
-      const picker = people.find(p => p.id === selectedPicker)!
       
       // Mark person as chosen
       setPeople(prev => prev.map(person => 
@@ -80,154 +85,252 @@ export default function Home() {
           : person
       ))
       
-      setPickedPerson(picked.name)
+      setPickedPerson(picked)
+      setGameHistory(prev => [...prev, {picker: picker.name, picked: picked.name}])
       setIsAnimating(false)
       setShowResult(true)
+      setConfetti(true)
       
       // Send SMS notification
       sendSMS(picker.phone, picker.name, picked.name)
-    }, 2000)
+    }, 3000)
   }
 
   const reset = () => {
     setSelectedPicker('')
-    setPickedPerson('')
+    setPickedPerson(null)
     setShowResult(false)
     setIsAnimating(false)
+    setConfetti(false)
   }
   
   const resetAll = () => {
     setPeople(initialPeople)
+    setGameHistory([])
     reset()
   }
 
   const pickerName = people.find(p => p.id === selectedPicker)?.name || ''
   const availableCount = selectedPicker ? getAvailablePeople(selectedPicker).length : 0
 
+  useEffect(() => {
+    if (confetti) {
+      const timer = setTimeout(() => setConfetti(false), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [confetti])
+
   return (
-    <main className="container mx-auto px-4 py-8 max-w-2xl">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">
-          🎁 White Elephant Name Picker
-        </h1>
-        <p className="text-gray-800 text-lg">
-          Pick a name for your gift exchange with custom restrictions!
-        </p>
+    <div className={`min-h-screen transition-all duration-500 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-purple-400 via-pink-500 to-red-500'}`}>
+      {/* Confetti Effect */}
+      {confetti && (
+        <div className="fixed inset-0 pointer-events-none z-50">
+          {[...Array(50)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute animate-bounce"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 2}s`,
+                fontSize: '2rem'
+              }}
+            >
+              🎉
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="relative">
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className="absolute top-4 right-4 p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all"
+        >
+          {darkMode ? '☀️' : '🌙'}
+        </button>
+        
+        <div className="text-center pt-12 pb-8">
+          <h1 className={`text-6xl font-black mb-4 ${darkMode ? 'text-white' : 'text-white'} drop-shadow-lg`}>
+            🎁 White Elephant Magic ✨
+          </h1>
+          <p className={`text-xl ${darkMode ? 'text-gray-300' : 'text-white/90'} font-medium`}>
+            The most fun way to pick your gift exchange partner!
+          </p>
+        </div>
       </div>
 
-      {!showResult && !isAnimating && (
-        <div className="card animate-fade-in">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6 text-center">
-            Who&apos;s picking today?
-          </h2>
-          
-          <div className="grid gap-3 mb-6">
-            {people.map((person) => (
-              <button
-                key={person.id}
-                onClick={() => setSelectedPicker(person.id)}
-                className={`p-4 rounded-lg border-2 transition-all duration-200 relative ${
-                  selectedPicker === person.id
-                    ? 'border-blue-500 bg-blue-50 text-blue-800'
-                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                }`}
-              >
-                <div className="font-medium flex justify-between items-center">
-                  {person.name}
-                  {person.isChosen && <span className="text-green-600 text-sm">✓ Chosen</span>}
-                </div>
-                {person.restrictions.length > 0 && (
-                  <div className="text-sm text-gray-700 mt-1">
-                    Can&apos;t pick: {person.restrictions.map(id => 
-                      people.find(p => p.id === id)?.name
-                    ).join(', ')}
+      <div className="max-w-4xl mx-auto px-6">
+        {/* Game Stats */}
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className={`text-center p-4 rounded-2xl ${darkMode ? 'bg-gray-800/50' : 'bg-white/20'} backdrop-blur-sm`}>
+            <div className="text-3xl font-bold text-white">{people.filter(p => p.isChosen).length}</div>
+            <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-white/80'}`}>Picked</div>
+          </div>
+          <div className={`text-center p-4 rounded-2xl ${darkMode ? 'bg-gray-800/50' : 'bg-white/20'} backdrop-blur-sm`}>
+            <div className="text-3xl font-bold text-white">{availableCount}</div>
+            <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-white/80'}`}>Available</div>
+          </div>
+          <div className={`text-center p-4 rounded-2xl ${darkMode ? 'bg-gray-800/50' : 'bg-white/20'} backdrop-blur-sm`}>
+            <div className="text-3xl font-bold text-white">{gameHistory.length}</div>
+            <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-white/80'}`}>Rounds</div>
+          </div>
+        </div>
+
+        {/* Main Game Area */}
+        {!showResult && !isAnimating && (
+          <div className={`p-8 rounded-3xl ${darkMode ? 'bg-gray-800/30' : 'bg-white/10'} backdrop-blur-lg border border-white/20 mb-8`}>
+            <h2 className="text-3xl font-bold text-white mb-8 text-center">
+              Who&apos;s picking today? 🤔
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              {people.map((person) => (
+                <button
+                  key={person.id}
+                  onClick={() => setSelectedPicker(person.id)}
+                  className={`group p-6 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 ${
+                    selectedPicker === person.id
+                      ? 'border-yellow-400 bg-yellow-400/20 scale-105'
+                      : `border-white/30 ${darkMode ? 'bg-gray-700/30' : 'bg-white/10'} hover:border-white/50`
+                  } ${person.isChosen ? 'opacity-50' : ''}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <span className="text-4xl">{person.emoji}</span>
+                      <div className="text-left">
+                        <div className="text-xl font-bold text-white">{person.name}</div>
+                        {person.restrictions.length > 0 && (
+                          <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-white/70'}`}>
+                            Can&apos;t pick: {person.restrictions.map(id => 
+                              people.find(p => p.id === id)?.name
+                            ).join(', ')}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {person.isChosen && (
+                      <span className="text-green-400 text-xl font-bold">✓ Chosen</span>
+                    )}
                   </div>
-                )}
-              </button>
-            ))}
-          </div>
+                </button>
+              ))}
+            </div>
 
-          {selectedPicker && (
-            <div className="text-center animate-slide-up">
-              <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-                <p className="text-blue-800">
-                  <strong>{pickerName}</strong> can pick from <strong>{availableCount}</strong> people
-                </p>
+            {selectedPicker && availableCount > 0 && (
+              <div className="text-center">
+                <div className={`mb-6 p-4 rounded-2xl ${darkMode ? 'bg-blue-900/30' : 'bg-blue-500/20'} border border-blue-400/30`}>
+                  <p className="text-white text-lg">
+                    <span className="font-bold">{pickerName}</span> can pick from{' '}
+                    <span className="font-bold text-yellow-400">{availableCount}</span> people
+                  </p>
+                </div>
+                
+                <button
+                  onClick={pickRandomPerson}
+                  className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-bold py-4 px-12 rounded-2xl text-xl transform transition-all duration-300 hover:scale-110 shadow-2xl"
+                >
+                  🎲 Pick My Person!
+                </button>
               </div>
-              
-              <button
-                onClick={pickRandomPerson}
-                className="btn-primary w-full text-lg"
-              >
-                🎲 Pick Random Person
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+            )}
 
-      {isAnimating && (
-        <div className="card text-center animate-fade-in">
-          <div className="py-12">
-            <div className="text-6xl mb-4 animate-bounce">🎁</div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-              Picking someone for {pickerName}...
-            </h2>
-            <div className="flex justify-center items-center space-x-1">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showResult && (
-        <div className="card text-center animate-fade-in">
-          <div className="py-8">
-            <div className="text-6xl mb-4">🎉</div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              {pickerName} picked...
-            </h2>
-             <div className="text-5xl font-bold text-white bg-gradient-to-r from-red-500 to-red-600 mb-6 animate-slide-up p-6 rounded-xl border-4 border-black shadow-2xl">
-               {pickedPerson}!
-             </div>
-            <p className="text-gray-800 text-lg mb-6">
-              Time to exchange gifts! 🎁
-            </p>
-            <button
-              onClick={reset}
-              className="btn-secondary"
-            >
-              Pick Again
-            </button>
-            <button
-              onClick={resetAll}
-              className="btn-secondary ml-4"
-            >
-              Reset All
-            </button>
-            {isSendingSMS && (
-              <p className="text-sm text-blue-600 mt-2">
-                📱 Sending SMS notification...
-              </p>
+            {selectedPicker && availableCount === 0 && (
+              <div className="text-center">
+                <div className="p-6 rounded-2xl bg-red-500/20 border border-red-400/30">
+                  <p className="text-white text-lg mb-4">
+                    😱 <span className="font-bold">{pickerName}</span> has no one left to pick!
+                  </p>
+                  <button
+                    onClick={resetAll}
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-8 rounded-xl"
+                  >
+                    🔄 Reset Game
+                  </button>
+                </div>
+              </div>
             )}
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="mt-8 text-center">
-        <div className="card">
-          <h3 className="font-semibold text-gray-900 mb-3">How it works:</h3>
-          <ul className="text-sm text-gray-800 space-y-1 text-left">
-            <li>• Nicholas and Ellie can&apos;t pick each other (they live together)</li>
-            <li>• Michael and Alyssa can&apos;t pick each other (they live together)</li>
-            <li>• Mom can pick anyone</li>
-            <li>• People already chosen can&apos;t be picked again</li>
-            <li>• SMS notifications sent automatically to the picker</li>
-          </ul>
-        </div>
+        {/* Animation State */}
+        {isAnimating && (
+          <div className={`p-12 rounded-3xl ${darkMode ? 'bg-gray-800/30' : 'bg-white/10'} backdrop-blur-lg text-center mb-8`}>
+            <div className="text-8xl mb-6 animate-spin">🎁</div>
+            <h2 className="text-3xl font-bold text-white mb-4">
+              Picking someone for {pickerName}...
+            </h2>
+            <div className="flex justify-center space-x-2">
+              {[0, 1, 2].map(i => (
+                <div
+                  key={i}
+                  className="w-4 h-4 bg-yellow-400 rounded-full animate-bounce"
+                  style={{animationDelay: `${i * 0.2}s`}}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Result State */}
+        {showResult && pickedPerson && (
+          <div className={`p-12 rounded-3xl ${darkMode ? 'bg-gray-800/30' : 'bg-white/10'} backdrop-blur-lg text-center mb-8`}>
+            <div className="text-8xl mb-6">🎉</div>
+            <h2 className="text-3xl font-bold text-white mb-4">
+              {pickerName} picked...
+            </h2>
+            
+            {/* THE FIXED RESULT DISPLAY */}
+            <div className="my-8 p-8 bg-white rounded-3xl shadow-2xl border-4 border-yellow-400">
+              <div className="text-6xl mb-4">{pickedPerson.emoji}</div>
+              <div className="text-6xl font-black text-gray-900">
+                {pickedPerson.name}!
+              </div>
+            </div>
+            
+            <p className="text-xl text-white mb-8">
+              Time for gift exchange magic! ✨🎁✨
+            </p>
+            
+            <div className="flex flex-wrap justify-center gap-4">
+              <button
+                onClick={reset}
+                className="bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-3 px-8 rounded-xl transform transition-all hover:scale-105"
+              >
+                🎲 Pick Again
+              </button>
+              <button
+                onClick={resetAll}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-8 rounded-xl transform transition-all hover:scale-105"
+              >
+                🔄 Reset All
+              </button>
+            </div>
+            
+            {isSendingSMS && (
+              <div className="mt-4 p-3 bg-blue-500/20 rounded-xl border border-blue-400/30">
+                <p className="text-white">📱 Sending magical SMS notification...</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Game History */}
+        {gameHistory.length > 0 && (
+          <div className={`p-6 rounded-3xl ${darkMode ? 'bg-gray-800/30' : 'bg-white/10'} backdrop-blur-lg mb-8`}>
+            <h3 className="text-2xl font-bold text-white mb-4">🏆 Game History</h3>
+            <div className="space-y-2">
+              {gameHistory.map((entry, index) => (
+                <div key={index} className={`p-3 rounded-xl ${darkMode ? 'bg-gray-700/30' : 'bg-white/10'}`}>
+                  <span className="text-white">
+                    <strong>{entry.picker}</strong> → <strong className="text-yellow-400">{entry.picked}</strong>
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-    </main>
+    </div>
   )
 }
