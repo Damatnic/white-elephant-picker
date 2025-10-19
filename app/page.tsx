@@ -441,27 +441,24 @@ export default function Home() {
             className={`p-10 sm:p-12 rounded-3xl ${darkMode ? 'bg-gray-900/40' : 'bg-white/10'} backdrop-blur-lg text-center mb-8 shadow-2xl shadow-black/20`}
           >
             <div className="text-6xl sm:text-7xl md:text-8xl mb-6">🎉</div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6">
-              {pickerName}, your assignment is complete!
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+              {pickerName} picked...
             </h2>
             
             <div className="my-6 sm:my-8 p-6 sm:p-8 bg-white rounded-3xl shadow-2xl border-4 border-yellow-400">
-              <div className="text-6xl sm:text-7xl mb-4">🎁</div>
-              <div className="text-3xl sm:text-4xl font-black text-gray-900 mb-3">
-                Secret Assignment Sent!
+              <div className="text-5xl sm:text-6xl mb-4">{pickedPerson.emoji}</div>
+              <div className="text-5xl sm:text-6xl font-black text-gray-900">
+                {pickedPerson.name}!
               </div>
-              <p className="text-base sm:text-lg text-gray-700 font-medium">
-                Check your phone for your secret match 📱
-              </p>
               {lastPickUsedFallback && (
-                <p className="mt-3 text-sm sm:text-base text-gray-600 italic">
-                  (Restrictions were lifted to keep the game going)
+                <p className="mt-3 text-sm sm:text-base text-gray-700 font-medium">
+                  Restrictions were lifted to keep the fun going! 🎁
                 </p>
               )}
             </div>
             
             <p className="text-lg sm:text-xl text-white mb-6 sm:mb-8">
-              Keep it secret until the gift exchange! 🤫✨
+              Time for gift exchange magic! ✨🎁✨
             </p>
             
             <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
