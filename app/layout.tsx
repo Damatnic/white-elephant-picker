@@ -17,10 +17,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <div className="min-h-screen bg-gradient-to-br from-slate-100 via-white to-blue-100">
+      <body className={`${inter.className} antialiased bg-slate-950`}>
+        <main className="min-h-screen">
           {children}
-        </div>
+        </main>
       </body>
     </html>
   )
