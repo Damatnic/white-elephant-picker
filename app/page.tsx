@@ -22,13 +22,8 @@ interface PickerAvailability {
   remainingCount: number
 }
 
-const initialPeople: Person[] = [
-  { id: 'nicholas', name: 'Nicholas', phone: '262-229-7103', restrictions: ['ellie'], isChosen: false, emoji: '🎮' },
-  { id: 'ellie', name: 'Ellie', phone: '218-443-2237', restrictions: ['nicholas'], isChosen: false, emoji: '⚽' },
-  { id: 'michael', name: 'Michael', phone: '414-343-9808', restrictions: ['alyssa'], isChosen: false, emoji: '🏀' },
-  { id: 'alyssa', name: 'Alyssa', phone: '414-379-3165', restrictions: ['michael'], isChosen: false, emoji: '📚' },
-  { id: 'mom', name: 'Mom', phone: '414-841-8664', restrictions: [], isChosen: false, emoji: '👑' }
-]
+// Empty initial state - users configure their own participants
+const initialPeople: Person[] = []
 
 const loadInitialPeople = (): Person[] => {
   if (typeof window === 'undefined') return initialPeople
