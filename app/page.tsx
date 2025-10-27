@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { generateMessage } from './utils/messaging'
+import { getSettings, saveExchangeHistory, getDefaultTemplate } from './utils/storage'
+import { exportToJSON, exportToText, exportToSimple, copyToClipboard, downloadFile, ResultPair } from './utils/export'
 
 interface Person {
   id: string
@@ -54,6 +57,9 @@ export default function Home() {
   const [darkMode, setDarkMode] = useState(false)
   const [lastPickUsedFallback, setLastPickUsedFallback] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [results, setResults] = useState<ResultPair[]>([])
+  const [eventName, setEventName] = useState<string>('Gift Exchange')
+  const [showExport, setShowExport] = useState(false)
 
   const getPickerAvailability = (pickerId: string): PickerAvailability => {
     const picker = people.find(p => p.id === pickerId)

@@ -14,8 +14,12 @@
     "@capacitor/cli": "^7.4.4",
     "@capacitor/core": "^7.4.4",
     "@capacitor/haptics": "^7.0.2",
+    "@capacitor/keyboard": "^7.0.3",
     "@capacitor/share": "^7.0.2",
+    "@capacitor/status-bar": "^7.0.3",
+    "js-cookie": "^3.0.5",
     "next": "^14.2.33",
+    "qrcode.react": "^4.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "typescript": "^5.2.2"
