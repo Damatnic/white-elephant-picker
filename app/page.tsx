@@ -356,7 +356,7 @@ export default function Home() {
               darkMode ? 'text-white' : 'text-white'
             } drop-shadow-lg`}
           >
-            🎁 White Elephant Magic ✨
+            🌟 Astral Swap ✨
           </h1>
           <p
             className={`text-base sm:text-lg md:text-xl ${
@@ -400,7 +400,7 @@ export default function Home() {
           >
             <div className="text-7xl mb-6">🎁</div>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Welcome to White Elephant Picker!
+              Welcome to Astral Swap!
             </h2>
             <p className="text-white/80 text-lg mb-8 max-w-2xl mx-auto">
               Get started by setting up your gift exchange. Add participants, set rules, and start picking!

@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.damatnic.whiteelephant',
-  appName: 'White Elephant Picker',
+  appName: 'Astral Swap',
   webDir: 'out',
   android: {
     buildOptions: {

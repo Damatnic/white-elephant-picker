@@ -164,7 +164,7 @@ export default function Settings() {
         <div className="mb-8 p-6 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20">
           <h2 className="text-white font-bold mb-4 text-lg">About</h2>
           <p className="text-white/80 text-sm mb-2">
-            White Elephant Picker v1.0
+            Astral Swap v1.0
           </p>
           <p className="text-white/60 text-xs">
             Made with ❤️ for family gift exchanges

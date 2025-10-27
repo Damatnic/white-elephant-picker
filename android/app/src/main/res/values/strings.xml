@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">White Elephant Picker</string>
-    <string name="title_activity_main">White Elephant Picker</string>
+    <string name="app_name">Astral Swap</string>
+    <string name="title_activity_main">Astral Swap</string>
     <string name="package_name">com.damatnic.whiteelephant</string>
     <string name="custom_url_scheme">com.damatnic.whiteelephant</string>
 </resources>

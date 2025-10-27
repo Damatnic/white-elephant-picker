@@ -5,7 +5,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'White Elephant Picker',
+  title: 'Astral Swap',
   description: 'Fun and easy way to organize gift exchanges with custom rules and restrictions',
   keywords: ['white elephant', 'gift exchange', 'name picker', 'holiday', 'christmas', 'secret santa'],
   icons: {
