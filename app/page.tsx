@@ -306,7 +306,7 @@ export default function Home() {
 
       {/* Header */}
       <div className="relative">
-        <div className="absolute top-4 right-4 flex gap-2">
+        <div className="absolute top-4 right-4 flex gap-2 flex-wrap justify-end max-w-[60%] sm:max-w-none">
           <Link
             href="/setup"
             className="px-3 py-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all text-white font-semibold text-sm"
