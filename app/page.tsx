@@ -324,6 +324,12 @@ export default function Home() {
           >
             🎛️ Settings
           </Link>
+          <Link
+            href="/history"
+            className="px-3 py-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all text-white font-semibold text-sm"
+          >
+            📚 History
+          </Link>
           <button
             onClick={() => setDarkMode(!darkMode)}
             className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all focus:outline-none focus:ring-2 focus:ring-yellow-300"
