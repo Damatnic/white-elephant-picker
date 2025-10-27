@@ -1,7 +1,6 @@
 import { neon } from '@neondatabase/serverless'
 import { drizzle } from 'drizzle-orm/neon-http'
-import { eq, and, lt } from 'drizzle-orm'
-import { sql } from 'drizzle-orm'
+import { eq, and, lt, sql as drizzleSql } from 'drizzle-orm'
 import * as schema from './schema'
 
 const connectionString = process.env.DATABASE_URL
@@ -44,7 +43,7 @@ export async function deleteSession(token: string) {
 }
 
 export async function deleteExpiredSessions() {
-  await db.delete(schema.sessions).where(sql`expires_at < NOW()`)
+  await db.delete(schema.sessions).where(drizzleSql`expires_at < NOW()`)
 }
 
 export async function getUserExchanges(userId: string) {
@@ -72,6 +71,6 @@ export async function deleteExchange(id: string, userId: string) {
 
 export async function deleteDemoUsersOlderThan(days: number) {
   const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
-  await db.delete(schema.users).where(sql`is_demo = true AND created_at < ${cutoffDate}`)
+  await db.delete(schema.users).where(drizzleSql`is_demo = true AND created_at < ${cutoffDate}`)
 }
 

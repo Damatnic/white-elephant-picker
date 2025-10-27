@@ -13,18 +13,19 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 export function generateToken(userId: string): string {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
+  return jwt.sign({ userId } as object, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions)
 }
 
 export function verifyToken(token: string): { userId: string } | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as { userId: string }
+    const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload
+    return { userId: decoded.userId as string }
   } catch {
     return null
   }
 }
 
 export function generateDemoToken(userId: string): string {
-  return jwt.sign({ userId, demo: true }, JWT_SECRET, { expiresIn: '24h' })
+  return jwt.sign({ userId, demo: true } as object, JWT_SECRET, { expiresIn: '24h' } as jwt.SignOptions)
 }
 
