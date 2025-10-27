@@ -6,7 +6,12 @@ import { getSettings, saveSettings, AppSettings } from '../utils/storage'
 import { messageTemplates } from '../utils/messaging'
 
 export default function Settings() {
-  const [settings, setSettings] = useState<AppSettings>(getSettings())
+  const [settings, setSettings] = useState<AppSettings>({
+    messageTemplate: 'fun',
+    hapticFeedback: true,
+    soundEffects: false,
+    theme: 'default'
+  })
   const [darkMode, setDarkMode] = useState(false)
   const [saved, setSaved] = useState(false)
 
@@ -16,14 +21,18 @@ export default function Settings() {
     setSaved(false)
   }
 
-  const handleSave = () => {
-    saveSettings(settings)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
-  }
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setSettings(getSettings())
+    }
+  }, [])
 
   useEffect(() => {
-    handleSave()
+    if (typeof window !== 'undefined' && settings.messageTemplate !== 'fun') {
+      saveSettings(settings)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    }
   }, [settings])
 
   return (

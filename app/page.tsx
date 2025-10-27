@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { generateMessage } from './utils/messaging'
-import { getSettings, saveExchangeHistory, getDefaultTemplate } from './utils/storage'
+import { getSettings, saveExchangeHistory } from './utils/storage'
 import { exportToJSON, exportToText, exportToSimple, copyToClipboard, downloadFile, ResultPair } from './utils/export'
 
 interface Person {
@@ -168,10 +168,17 @@ export default function Home() {
       setShowResult(true)
       setConfetti(true)
       
-      // Send SMS notification with special message if restriction was overridden
-      const message = hadRestrictions 
-        ? `🎁 White Elephant SPECIAL! ${picker.name}, you got ${picked.name}! (Restrictions were lifted to keep the game going!) 🎉`
-        : `🎁 White Elephant Magic! ${picker.name}, you picked ${picked.name}! Get ready for gift exchange fun! 🎉`
+      // Track result
+      setResults(prev => [...prev, { picker: picker.name, picked: picked.name }])
+      
+      // Generate message using template
+      const settings = getSettings()
+      const message = generateMessage(
+        settings.messageTemplate,
+        picker.name,
+        picked.name,
+        eventName
+      )
       
       sendSMS(picker.phone, picker.name, picked.name, message)
     }, 3000)
@@ -189,6 +196,41 @@ export default function Home() {
   const resetAll = () => {
     setPeople(initialPeople)
     reset()
+    setResults([])
+  }
+
+  const handleExportJSON = () => {
+    const json = exportToJSON(results, eventName)
+    downloadFile(json, `${eventName}-results.json`, 'application/json')
+  }
+
+  const handleExportText = () => {
+    const text = exportToText(results, eventName)
+    downloadFile(text, `${eventName}-results.txt`, 'text/plain')
+  }
+
+  const handleCopyResults = async () => {
+    const text = exportToSimple(results)
+    const copied = await copyToClipboard(text)
+    if (copied) {
+      alert('Results copied to clipboard!')
+    } else {
+      alert('Failed to copy. Please try export instead.')
+    }
+  }
+
+  const handleSaveToHistory = () => {
+    if (results.length === 0) return
+    
+    saveExchangeHistory({
+      id: `exchange-${Date.now()}`,
+      name: eventName,
+      date: new Date().toISOString(),
+      people: people,
+      results: results,
+      completed: chosenCount === people.length
+    })
+    alert('Exchange saved to history!')
   }
 
   const pickerName = people.find(p => p.id === selectedPicker)?.name || ''
@@ -222,6 +264,21 @@ export default function Home() {
     mediaQuery.addEventListener('change', updateMatch)
 
     return () => mediaQuery.removeEventListener('change', updateMatch)
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    try {
+      const saved = localStorage.getItem('whiteElephantSetup')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (parsed.eventName) {
+          setEventName(parsed.eventName)
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load event name:', e)
+    }
   }, [])
 
   return (
@@ -260,6 +317,12 @@ export default function Home() {
             className="px-3 py-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all text-white font-semibold text-sm"
           >
             ⚙️ Setup
+          </Link>
+          <Link
+            href="/settings"
+            className="px-3 py-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all text-white font-semibold text-sm"
+          >
+            🎛️ Settings
           </Link>
           <button
             onClick={() => setDarkMode(!darkMode)}
@@ -504,6 +567,39 @@ export default function Home() {
                 🔄 Reset All
               </button>
             </div>
+
+            {/* Export Options */}
+            {results.length > 0 && (
+              <div className="mt-6 p-4 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20">
+                <p className="text-white font-semibold mb-3 text-center">Export Results</p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <button
+                    onClick={handleExportJSON}
+                    className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-sm transition-all"
+                  >
+                    📄 JSON
+                  </button>
+                  <button
+                    onClick={handleExportText}
+                    className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-sm transition-all"
+                  >
+                    📝 Text
+                  </button>
+                  <button
+                    onClick={handleCopyResults}
+                    className="px-3 py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg text-sm transition-all"
+                  >
+                    📋 Copy
+                  </button>
+                  <button
+                    onClick={handleSaveToHistory}
+                    className="px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-lg text-sm transition-all"
+                  >
+                    💾 Save
+                  </button>
+                </div>
+              </div>
+            )}
             
             {isSendingSMS && (
               <div className="mt-4 p-3 bg-blue-500/20 rounded-xl border border-blue-400/30">
