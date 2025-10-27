@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 
 interface Person {
   id: string
@@ -26,8 +27,24 @@ const initialPeople: Person[] = [
   { id: 'mom', name: 'Mom', phone: '414-841-8664', restrictions: [], isChosen: false, emoji: '👑' }
 ]
 
+const loadInitialPeople = (): Person[] => {
+  if (typeof window === 'undefined') return initialPeople
+  try {
+    const saved = localStorage.getItem('whiteElephantSetup')
+    if (saved) {
+      const parsed = JSON.parse(saved)
+      if (parsed.people && Array.isArray(parsed.people) && parsed.people.length > 0) {
+        return parsed.people.map((p: any) => ({ ...p, isChosen: false }))
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load saved setup:', e)
+  }
+  return initialPeople
+}
+
 export default function Home() {
-  const [people, setPeople] = useState<Person[]>(initialPeople)
+  const [people, setPeople] = useState<Person[]>(loadInitialPeople())
   const [selectedPicker, setSelectedPicker] = useState<string>('')
   const [pickedPerson, setPickedPerson] = useState<Person | null>(null)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -231,7 +248,13 @@ export default function Home() {
 
       {/* Header */}
       <div className="relative">
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-4 right-4 flex gap-2">
+          <Link
+            href="/setup"
+            className="px-3 py-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all text-white font-semibold text-sm"
+          >
+            ⚙️ Setup
+          </Link>
           <button
             onClick={() => setDarkMode(!darkMode)}
             className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all focus:outline-none focus:ring-2 focus:ring-yellow-300"
