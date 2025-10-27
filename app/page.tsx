@@ -351,7 +351,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-16 md:pb-20">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-24 sm:pb-16 md:pb-20">
         {/* Game Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8">
           <div
@@ -374,8 +374,31 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Welcome Screen - No Participants */}
+        {!showResult && !isAnimating && people.length === 0 && (
+          <div
+            className={`p-8 sm:p-12 rounded-3xl ${
+              darkMode ? 'bg-gray-900/50' : 'bg-white/10'
+            } backdrop-blur-lg border border-white/20 mb-8 shadow-xl shadow-black/10 text-center`}
+          >
+            <div className="text-7xl mb-6">🎁</div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+              Welcome to White Elephant Picker!
+            </h2>
+            <p className="text-white/80 text-lg mb-8 max-w-2xl mx-auto">
+              Get started by setting up your gift exchange. Add participants, set rules, and start picking!
+            </p>
+            <Link
+              href="/setup"
+              className="inline-block bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-bold py-4 px-12 rounded-2xl text-xl transform transition-all duration-300 hover:scale-105 shadow-2xl"
+            >
+              🎯 Create Your Exchange
+            </Link>
+          </div>
+        )}
+
         {/* Main Game Area */}
-        {!showResult && !isAnimating && (
+        {!showResult && !isAnimating && people.length > 0 && (
           <div
             className={`p-6 sm:p-8 rounded-3xl ${
               darkMode ? 'bg-gray-900/50' : 'bg-white/10'
@@ -389,10 +412,10 @@ export default function Home() {
               <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-purple-500/30 to-pink-500/30 border border-purple-300/40">
                 <div className="text-center">
                   <p className="text-white text-base sm:text-lg mb-2">
-                    👑 <strong>Suggestion:</strong> Have Mom pick first!
+                    🎯 <strong>Ready to start!</strong>
                   </p>
                   <p className="text-white/80 text-xs sm:text-sm">
-                    She has no restrictions, so she can pick anyone. Then the couple restrictions will work perfectly for everyone else!
+                    Choose who is picking first, then pass the phone to the next person after they see their result.
                   </p>
                 </div>
               </div>
@@ -406,8 +429,6 @@ export default function Home() {
                   className={`group p-5 sm:p-6 rounded-2xl border-2 transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-0.5 ${
                     selectedPicker === person.id
                       ? 'border-yellow-400 bg-yellow-400/20 scale-[1.02] shadow-2xl'
-                      : person.id === 'mom' && people.filter(p => p.isChosen).length === 0
-                      ? `border-purple-400 bg-purple-400/10 hover:border-purple-300 ${darkMode ? 'bg-purple-700/20' : 'bg-purple-500/10'}`
                       : `border-white/30 ${darkMode ? 'bg-gray-700/30' : 'bg-white/10'} hover:border-white/50`
                   }`}
                   aria-pressed={selectedPicker === person.id}
@@ -417,13 +438,8 @@ export default function Home() {
                     <div className="flex items-center gap-3 sm:gap-4">
                       <span className="text-3xl sm:text-4xl">{person.emoji}</span>
                       <div className="text-left">
-                        <div className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                        <div className="text-lg sm:text-xl font-bold text-white">
                           {person.name}
-                          {person.id === 'mom' && people.filter(p => p.isChosen).length === 0 && (
-                            <span className="text-[10px] sm:text-xs bg-purple-500 text-white px-2 py-[3px] rounded-full animate-pulse">
-                              Go First!
-                            </span>
-                          )}
                         </div>
                         {person.restrictions.length > 0 && (
                           <div className={`text-xs sm:text-sm ${darkMode ? 'text-gray-400' : 'text-white/70'}`}>
