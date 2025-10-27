@@ -55,6 +55,7 @@ export default function Home() {
   const [results, setResults] = useState<ResultPair[]>([])
   const [eventName, setEventName] = useState<string>('Gift Exchange')
   const [showExport, setShowExport] = useState(false)
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
 
   const getPickerAvailability = (pickerId: string): PickerAvailability => {
     const picker = people.find(p => p.id === pickerId)
@@ -208,14 +209,20 @@ export default function Home() {
     const text = exportToSimple(results)
     const copied = await copyToClipboard(text)
     if (copied) {
-      alert('Results copied to clipboard!')
+      setNotification({ message: '✓ Results copied to clipboard!', type: 'success' })
+      setTimeout(() => setNotification(null), 3000)
     } else {
-      alert('Failed to copy. Please try export instead.')
+      setNotification({ message: 'Failed to copy. Please try export instead.', type: 'error' })
+      setTimeout(() => setNotification(null), 3000)
     }
   }
 
   const handleSaveToHistory = () => {
-    if (results.length === 0) return
+    if (results.length === 0) {
+      setNotification({ message: 'No results to save yet!', type: 'error' })
+      setTimeout(() => setNotification(null), 3000)
+      return
+    }
     
     saveExchangeHistory({
       id: `exchange-${Date.now()}`,
@@ -225,7 +232,8 @@ export default function Home() {
       results: results,
       completed: chosenCount === people.length
     })
-    alert('Exchange saved to history!')
+    setNotification({ message: '✓ Exchange saved to history!', type: 'success' })
+    setTimeout(() => setNotification(null), 3000)
   }
 
   const pickerName = people.find(p => p.id === selectedPicker)?.name || ''
@@ -301,6 +309,15 @@ export default function Home() {
               🎉
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Notification Toast */}
+      {notification && (
+        <div className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-4 rounded-2xl shadow-2xl animate-slide-up ${
+          notification.type === 'success' ? 'bg-green-500' : notification.type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+        } text-white font-semibold max-w-md`}>
+          {notification.message}
         </div>
       )}
 
