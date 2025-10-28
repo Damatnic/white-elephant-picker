@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  output: 'export',
+  // Removed output: 'export' to support API routes and SSR for authentication
   trailingSlash: true,
   images: {
     unoptimized: true,
